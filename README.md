@@ -46,8 +46,8 @@ $ python3 furigana.py '活版印刷の流れを汲む出版作業では'
 ```
 
 # Dependency
-See https://pypi.python.org/pypi/mecab-python3/0.7
-run below commands on ubuntu
+See https://pypi.python.org/pypi/mecab-python3/0.7 <br/>
+run below commands on ubuntu 
 ```
 sudo apt-get install libmecab-dev
 sudo apt-get install mecab mecab-ipadic-utf8
