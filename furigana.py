@@ -8,12 +8,29 @@ import unicodedata
 
 def is_kanji(ch):
     return 'CJK UNIFIED IDEOGRAPH' in unicodedata.name(ch)
+
+
 def is_hiragana(ch):
     return 'HIRAGANA' in unicodedata.name(ch)
 
+
+def split_okurigana_reverse(text, hiragana):
+    """ お茶(おちゃ)
+        ご無沙汰(ごぶさた)
+    """
+    yield (text[0],)
+    yield (text[1:], hiragana[1:])
+
+
 def split_okurigana(text, hiragana):
     """ 送り仮名 processing
+      tested: 
+         * 出会(であ)う
+         * 明(あか)るい
+         * 駆(か)け抜(ぬ)け
     """
+    if is_hiragana(text[0]):
+        yield from split_okurigana_reverse(text, hiragana)
     if all(is_kanji(_) for _ in text):
         yield text, hiragana
         return
@@ -100,8 +117,8 @@ def print_html(text):
 
 
 def main():
-    # print_html('このイカレた時代へようこそ')
-    print_html('澱んだ街角で僕らは出会った')
+    text = sys.argv[1]
+    print_html(text)
 
 
 if __name__ == '__main__':
