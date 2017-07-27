@@ -21,3 +21,19 @@ print_html('澱んだ街角で僕らは出会った')
 <ruby><rb>会</rb><rt>あ</rt></ruby>
 っ
 た
+
+### input
+print_html('お茶にお煎餅、よく合いますね')
+### output
+お
+<ruby><rb>茶</rb><rt>ちゃ</rt></ruby>
+に
+お
+<ruby><rb>煎餅</rb><rt>せんべい</rt></ruby>
+、
+よく
+<ruby><rb>合</rb><rt>あ</rt></ruby>
+い
+ます
+ね
+
