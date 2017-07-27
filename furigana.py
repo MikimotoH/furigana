@@ -15,11 +15,14 @@ def is_hiragana(ch):
 
 
 def split_okurigana_reverse(text, hiragana):
-    """ お茶(おちゃ)
+    """ 
+      tested:
+        お茶(おちゃ)
         ご無沙汰(ごぶさた)
+        お子(こ)さん
     """
     yield (text[0],)
-    yield (text[1:], hiragana[1:])
+    yield from split_okurigana(text[1:], hiragana[1:])
 
 
 def split_okurigana(text, hiragana):
