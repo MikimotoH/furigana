@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from distutils.core import setup
 
@@ -6,10 +7,9 @@ setup(name='furigana',
 	version='0.1',
 	description='''convert Kanji in Japanese into Kanji with Hiragana placed above (Furigana(振り仮名)). For example, "澱んだ街角" => "澱(よど)んだ街角(まちかど)" ''',
 	author='Miki.Liu',
+	author_email='mikimotoh@gmail.com',
 	url='https://github.com/MikimotoH/furigana',
 	packages=['furigana'],
-	install_requires=['mecab-python3']
-	python_requires='>=3',
 	classifiers=[
 	    # How mature is this project? Common values are
 	    #   3 - Alpha
@@ -32,5 +32,4 @@ setup(name='furigana',
 	    'Programming Language :: Python :: 3.4',
 	    ],
 	keywords='Japanese Language Processing',
-	packages=['furigana']
 	)
