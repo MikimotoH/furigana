@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # $ python -m hello
 
 import sys
-from furigana import split_furigana
+from furigana.furigana import split_furigana
 
 def print_html(text):
     for pair in split_furigana(text):
