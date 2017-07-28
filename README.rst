@@ -51,7 +51,7 @@ ubuntu
 
     sudo apt-get install libmecab-dev
     sudo apt-get install mecab mecab-ipadic-utf8
-    pip install mecab-python3
+    pip3 install mecab-python3
     
 Conflict with Anaconda Python
 ==========
