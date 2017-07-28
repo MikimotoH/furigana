@@ -53,3 +53,6 @@ sudo apt-get install libmecab-dev
 sudo apt-get install mecab mecab-ipadic-utf8
 pip install mecab-python3
 ```
+
+# Conflict with Anaconda Python
+Please use Ubuntu's original python3, not to use with Anaconda Python3
