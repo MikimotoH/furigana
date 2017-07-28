@@ -6,6 +6,7 @@ It uses [MeCab](http://taku910.github.io/mecab/) (a Natural Language Toolkit) to
 ## Example:
 ### input
 ```
+from furigana.furigana import print_html
 print_html('澱んだ街角で僕らは出会った')
 ```
 ### output
@@ -24,6 +25,7 @@ print_html('澱んだ街角で僕らは出会った')
 
 ### input
 ```
+from furigana.furigana import print_html
 print_html('お茶にお煎餅、よく合いますね')
 ```
 
@@ -49,8 +51,7 @@ $ python3 furigana.py '活版印刷の流れを汲む出版作業では'
 See https://pypi.python.org/pypi/mecab-python3/0.7 <br/>
 run below commands on ubuntu 
 ```
-sudo apt-get install libmecab-dev
-sudo apt-get install mecab mecab-ipadic-utf8
+sudo apt-get install libmecab-dev mecab mecab-ipadic-utf8
 pip3 install mecab-python3
 pip3 install jaconv
 ```

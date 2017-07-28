@@ -15,6 +15,7 @@ input
 
 ::
 
+    from furigana.furigana import print_plaintext
     print_plaintext('澱んだ街角で僕らは出会った')
 
 output
@@ -27,6 +28,7 @@ input
 
 ::
 
+    from furigana.furigana import print_plaintext
     print_plaintext('お茶にお煎餅、よく合いますね')
 
 output
@@ -49,8 +51,7 @@ ubuntu
 
 ::
 
-    sudo apt-get install libmecab-dev
-    sudo apt-get install mecab mecab-ipadic-utf8
+    sudo apt-get install libmecab-dev mecab mecab-ipadic-utf8
     sudo -H pip3 install mecab-python3
     sudo -H pip3 install jaconv
     

@@ -117,6 +117,16 @@ def print_html(text):
     print('')
 
 
+def print_plaintext(text):
+    for pair in split_furigana(text):
+        if len(pair)==2:
+            kanji,hira = pair
+            print("%s(%s)" % (kanja,hira), end='')
+        else:
+            print(pair[0], end='')
+    print('')
+
+
 def main():
     text = sys.argv[1]
     print_html(text)
