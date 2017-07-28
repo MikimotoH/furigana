@@ -51,7 +51,8 @@ ubuntu
 
     sudo apt-get install libmecab-dev
     sudo apt-get install mecab mecab-ipadic-utf8
-    pip3 install mecab-python3
+    sudo -H pip3 install mecab-python3
+    sudo -H pip3 install jaconv
     
 Conflict with Anaconda Python
 ==========
