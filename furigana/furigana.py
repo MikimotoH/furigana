@@ -107,15 +107,12 @@ def split_furigana(text):
 
 def print_html(text):
     for pair in split_furigana(text):
-        try:
-            if len(pair)==2:
-                kanji,hira = pair
-                print("<ruby><rb>{0}</rb><rt>{1}</rt></ruby>".
-                        format(kanji, hira))
-            else:
-                print(pair[0])
-        except BaseException as ex:
-            print(ex)
+        if len(pair)==2:
+            kanji,hira = pair
+            print("<ruby><rb>{0}</rb><rt>{1}</rt></ruby>".
+                    format(kanji, hira), end='')
+        else:
+            print(pair[0], end='')
     print('')
 
 

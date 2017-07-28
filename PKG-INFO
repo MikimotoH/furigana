@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: furigana
+Version: 1.0
+Summary: convert Kanji in Japanese into Kanji with Hiragana placed above
+Home-page: https://github.com/MikimotoH/furigana
+Author: Miki.Liu
+Author-email: mikimotoh@gmail.com
+License: MIT LICENSE
+Description: convert Kanji in Japanese into Kanji superscripted with Furigana(振り仮名).  For example, "澱んだ街角" => "澱(よど)んだ街角(まちかど)"
+Platform: Ubuntu
+
