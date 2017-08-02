@@ -11,9 +11,8 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='furigana', 
-	version='0.0.7',
-	description='''convert Kanji in Japanese into Kanji attached with Hiragana (Furigana(振り仮名)). 
-        For example, "澱んだ街角" => "澱(よど)んだ街角(まちかど)" ''',
+	version='0.0.7.1',
+	description='Convert Japanese Kanji to Kanji attached with Hiragana. For example, 「澱んだ街角」→「澱(よど)んだ街角(まちかど)」',
 	long_description = long_description,
 	author='Miki.Liu',
 	author_email='mikimotoh@gmail.com',
