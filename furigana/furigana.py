@@ -56,7 +56,7 @@ def split_okurigana(text, hiragana):
         
         #get reading of kanji
         # j-start_j < i - start_i every kanji has at least one sound associated with it
-        while j < len(hiragana) and (hiragana[j] != text[i] and jaconv.hira2kata(hiragana[j]) != text[i] or j-start_j < i - start_i):
+        while j < len(hiragana) and ((hiragana[j] != text[i] and jaconv.hira2kata(hiragana[j]) != text[i]) or j-start_j < i - start_i):
             j += 1
 
         split.append(Text(text[start_i:i], hiragana[start_j:j]))
@@ -127,5 +127,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-print_html('が空のとき、漢字以外の時はふりがなを振る必要がないのでそのまま出力する')
