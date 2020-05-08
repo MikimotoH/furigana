@@ -5,73 +5,63 @@ import MeCab
 import re
 import jaconv
 import unicodedata
+from collections import namedtuple
 
+Text = namedtuple('Text', ['text', 'furigana'])
 
 def is_kanji(ch):
+    #also include 々 as Kanji
     return 'CJK UNIFIED IDEOGRAPH' in unicodedata.name(ch)
-
 
 def is_hiragana(ch):
     return 'HIRAGANA' in unicodedata.name(ch)
 
+def is_katakana(ch):
+    return 'KATAKANA' in unicodedata.name(ch)
 
-def split_okurigana_reverse(text, hiragana):
-    """ 
-      tested:
-        お茶(おちゃ)
-        ご無沙汰(ごぶさた)
-        お子(こ)さん
-    """
-    yield (text[0],)
-    yield from split_okurigana(text[1:], hiragana[1:])
-
+def is_normal_character(ch):
+    return is_hiragana(ch) or is_katakana(ch)
 
 def split_okurigana(text, hiragana):
-    """ 送り仮名 processing
-      tested: 
-         * 出会(であ)う
-         * 明(あか)るい
-         * 駆(か)け抜(ぬ)け
-    """
-    if is_hiragana(text[0]):
-        yield from split_okurigana_reverse(text, hiragana)
-    if all(is_kanji(_) for _ in text):
-        yield text, hiragana
-        return
-    text = list(text)
-    ret = (text[0], [hiragana[0]])
-    for hira in hiragana[1:]:
-        for char in text:
-            if hira == char:
-                text.pop(0)
-                if ret[0]:
-                    if is_kanji(ret[0]):
-                        yield ret[0], ''.join(ret[1][:-1])
-                        yield (ret[1][-1],)
-                    else:
-                        yield (ret[0],)
-                else:
-                    yield (hira,)
-                ret = ('', [])
-                if text and text[0] == hira:
-                    text.pop(0)
+
+    split = []
+    i = 0
+    j = 0
+
+    while i < len(text):
+        start_i = i
+        start_j = j
+        # take care of hiragana only parts
+        if(is_normal_character(text[i])):
+            while i < len(text) and j < len(hiragana) and is_normal_character(text[i]):
+                i += 1
+                j += 1
+        
+            split.append(Text(text[start_i:i], None))
+
+            if(i >= len(text)):
                 break
-            else:
-                if is_kanji(char):
-                    if ret[1] and hira == ret[1][-1]:
-                        text.pop(0)
-                        yield ret[0], ''.join(ret[1][:-1])
-                        yield char, hira
-                        ret = ('', [])
-                        text.pop(0)
-                    else:
-                        ret = (char, ret[1]+[hira])
-                else:
-                    # char is also hiragana
-                    if hira != char:
-                        break
-                    else:
-                        break
+
+            start_i = i
+            start_j = j
+
+        # find next non kanji
+        while i < len(text) and not is_normal_character(text[i]):
+            i += 1
+
+        #if there only kanji left
+        if(i >= len(text)):
+            split.append(Text(text[start_i:i], hiragana[start_j:len(hiragana)]))
+            break
+        
+        #get reading of kanji
+        # j-start_j < i - start_i every kanji has at least one sound associated with it
+        while j < len(hiragana) and ((hiragana[j] != text[i] and jaconv.hira2kata(hiragana[j]) != text[i]) or j-start_j < i - start_i):
+            j += 1
+
+        split.append(Text(text[start_i:i], hiragana[start_j:j]))
+        
+    return split
 
 
 def split_furigana(text):
@@ -94,37 +84,40 @@ def split_furigana(text):
             continue
 
         # originが空のとき、漢字以外の時はふりがなを振る必要がないのでそのまま出力する
-        if origin != "" and any(is_kanji(_) for _ in origin):
+        #sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
+        if origin != "" and len(node.feature.split(",")) > 7 and any(is_kanji(_) for _ in origin):
             kana = node.feature.split(",")[7] # 読み仮名を代入
             hiragana = jaconv.kata2hira(kana)
-            for pair in split_okurigana(origin, hiragana):
-                ret += [pair]
+            ret  += split_okurigana(origin, hiragana)
         else:
             if origin:
-                ret += [(origin,)]
+                ret += [Text(origin, None)]
         node = node.next
+
     return ret
+
+def create_furigana_html(text):
+    string = ""
+    for pair in split_furigana(text):
+        if pair.furigana:
+            string += "<ruby>%s<rt>%s</rt></ruby>" %(pair.text, pair.furigana)
+        else:
+            string+= pair.text
+    return(string)
 
 
 def print_html(text):
-    for pair in split_furigana(text):
-        if len(pair)==2:
-            kanji,hira = pair
-            print("<ruby><rb>{0}</rb><rt>{1}</rt></ruby>".
-                    format(kanji, hira), end='')
-        else:
-            print(pair[0], end='')
-    print('')
+    print(create_furigana_html(text))
 
 
 def print_plaintext(text):
+    string = ""
     for pair in split_furigana(text):
-        if len(pair)==2:
-            kanji,hira = pair
-            print("%s(%s)" % (kanja,hira), end='')
+        if pair.furigana:
+            string += "%s(%s)"%(pair.text, pair.furigana)
         else:
-            print(pair[0], end='')
-    print('')
+            string+= pair.text
+    print(string)
 
 
 def main():
@@ -134,4 +127,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
