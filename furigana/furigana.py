@@ -106,6 +106,10 @@ def create_furigana_html(text):
     return(string)
 
 
+def return_html(text):
+    return create_furigana_html(text)
+
+
 def print_html(text):
     print(create_furigana_html(text))
 

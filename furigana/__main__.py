@@ -6,6 +6,18 @@
 import sys
 from furigana.furigana import split_furigana
 
+def return_html(text):
+    output = ""
+    for pair in split_furigana(text):
+        if len(pair)==2:
+            kanji,hira = pair
+            output += "<ruby><rb>{0}</rb><rt>{1}</rt></ruby>".
+                    format(kanji, hira)
+        else:
+            output += pair[0]
+    return output
+
+
 def print_html(text):
     for pair in split_furigana(text):
         if len(pair)==2:
