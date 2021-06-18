@@ -52,8 +52,7 @@ See https://pypi.python.org/pypi/mecab-python3/0.7 <br/>
 run below commands on ubuntu 
 ```
 sudo apt-get install libmecab-dev mecab mecab-ipadic-utf8
-sudo -H pip3 install mecab-python3
-sudo -H pip3 install jaconv
+sudo -H pip3 install .
 ```
 
 # Conflict with Anaconda Python
