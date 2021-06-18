@@ -78,23 +78,26 @@ def split_furigana(text):
     ret = []
 
     while node is not None:
-        origin = node.surface # もとの単語を代入
-        if not origin:
-            node = node.next
-            continue
+        texts = parse_node(node)
+        if texts:
+            ret.extend(texts)
 
-        # originが空のとき、漢字以外の時はふりがなを振る必要がないのでそのまま出力する
-        #sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
-        if origin != "" and len(node.feature.split(",")) > 7 and any(is_kanji(_) for _ in origin):
-            kana = node.feature.split(",")[7] # 読み仮名を代入
-            hiragana = jaconv.kata2hira(kana)
-            ret  += split_okurigana(origin, hiragana)
-        else:
-            if origin:
-                ret += [Text(origin, None)]
         node = node.next
 
     return ret
+
+def parse_node(node):
+    # originが空のとき、漢字以外の時はふりがなを振る必要がないのでそのまま出力する
+    # sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
+    origin = node.surface
+    if origin != "" and len(node.feature.split(",")) > 7 and any(is_kanji(_) for _ in origin):
+        kana = node.feature.split(",")[7]  # 読み仮名を代入
+        hiragana = jaconv.kata2hira(kana)
+        return split_okurigana(origin, hiragana)
+    elif origin:
+        return [Text(origin, None)]
+    else:
+        return []
 
 def create_furigana_html(text):
     string = ""
