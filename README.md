@@ -57,3 +57,10 @@ sudo -H pip3 install .
 
 # Conflict with Anaconda Python
 Please use Ubuntu's original python3, not to use with Anaconda Python3
+
+# Testing
+Some unit tests are provided:
+```
+sudo -H pip3 install pytest
+python3 -m pytest -s tests/test_furigana.py
+```
