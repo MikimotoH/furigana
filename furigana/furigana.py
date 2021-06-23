@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
-import MeCab
-import re
-import jaconv
 import unicodedata
 from collections import namedtuple
+from xml.sax.saxutils import escape
+
+import MeCab
+import jaconv
+
+mecab = MeCab.Tagger("-Ochasen")
 
 Text = namedtuple('Text', ['text', 'furigana'])
 
@@ -72,7 +75,6 @@ def split_furigana(text):
     ```
     It seems like MeCab has bug in releasing resource
     """
-    mecab = MeCab.Tagger("-Ochasen")
     mecab.parse('') # 空でパースする必要がある
     node = mecab.parseToNode(text)
     ret = []
@@ -99,14 +101,22 @@ def parse_node(node):
     else:
         return []
 
+
 def create_furigana_html(text):
     string = ""
     for pair in split_furigana(text):
         if pair.furigana:
-            string += "<ruby>%s<rt>%s</rt></ruby>" %(pair.text, pair.furigana)
+            string += "<ruby>%s<rt>%s</rt></ruby>" % (xmlescape(pair.text), xmlescape(pair.furigana))
         else:
-            string+= pair.text
+            string += xmlescape(pair.text)
     return(string)
+
+
+def xmlescape(data):
+    return escape(data, entities={
+        "'": "&apos;",
+        "\"": "&quot;"
+    })
 
 
 def return_html(text):
