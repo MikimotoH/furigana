@@ -4,6 +4,17 @@ from furigana.furigana import split_furigana, split_okurigana, Text
 
 
 @pytest.mark.parametrize(["text", "expected_split"], [
+    ("Spaces won't be forgotten", [
+        Text(text='Spaces', furigana=None),
+        Text(text=' ', furigana=None),
+        Text(text='won', furigana=None),
+        Text(text="'", furigana=None),
+        Text(text='t', furigana=None),
+        Text(text=' ', furigana=None),
+        Text(text='be', furigana=None),
+        Text(text=' ', furigana=None),
+        Text(text='forgotten', furigana=None),
+    ]),
     ("２０００年", [
         Text(text='２０００年', furigana='にせんねん')
     ]),

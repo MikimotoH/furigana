@@ -67,7 +67,7 @@ def split_okurigana(text, hiragana):
     return split
 
 
-def split_furigana(text):
+def split_furigana(text, preserve_spaces=True):
     """ MeCab has a problem if used inside a generator ( use yield instead of return  )
     The error message is:
     ```
@@ -79,7 +79,14 @@ def split_furigana(text):
     node = mecab.parseToNode(text)
     ret = []
 
+    cursor = 0
     while node is not None:
+        if preserve_spaces:
+            new_cursor, spaces = detect_spaces(cursor, node, text)
+            cursor = new_cursor
+            if spaces:
+                ret.append(Text(spaces, None))
+
         texts = parse_node(node)
         if texts:
             ret.extend(texts)
@@ -87,6 +94,19 @@ def split_furigana(text):
         node = node.next
 
     return ret
+
+
+def detect_spaces(cursor, node, text):
+    spaces = None
+    origin = node.surface
+    if origin:
+        origin_start = text.index(origin, cursor)
+        origin_end = origin_start + len(origin)
+        if cursor < origin_start:
+            spaces = text[cursor:origin_start]
+        cursor = origin_end
+    return cursor, spaces
+
 
 def parse_node(node):
     # originが空のとき、漢字以外の時はふりがなを振る必要がないのでそのまま出力する
