@@ -17,10 +17,10 @@ def is_kanji(ch):
     return 'CJK UNIFIED IDEOGRAPH' in unicodedata.name(ch)
 
 def is_hiragana(ch):
-    return 'HIRAGANA' in unicodedata.name(ch)
+    return 'HIRAGANA' in unicodedata.name(ch) and ch != "・"
 
 def is_katakana(ch):
-    return 'KATAKANA' in unicodedata.name(ch)
+    return 'KATAKANA' in unicodedata.name(ch) and ch != "・"
 
 def is_normal_character(ch):
     return is_hiragana(ch) or is_katakana(ch)

@@ -34,6 +34,9 @@ def test_split_furigana(text, expected_split):
 
 
 @pytest.mark.parametrize(["text", "hiragana", "expected_split"], [
+    ("銃・病原菌・鉄", "じゅうびょうげんきんてつ", [
+        Text(text='銃・病原菌・鉄', furigana='じゅうびょうげんきんてつ')
+    ]),
     ("出会う", "であう", [
         Text(text='出会', furigana='であ'),
         Text(text='う', furigana=None),
