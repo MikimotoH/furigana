@@ -45,9 +45,23 @@ def test_split_furigana(text, expected_split):
 
 
 @pytest.mark.parametrize(["text", "hiragana", "expected_split"], [
-    ("銃・病原菌・鉄", "じゅうびょうげんきんてつ", [
-        Text(text='銃・病原菌・鉄', furigana='じゅうびょうげんきんてつ')
-    ]),
+    (
+        # Fallback in case of kana mismatch between text and hiragana
+        "あ。あ", "あのあ", [Text(text='あ。あ', furigana='あのあ')]
+    ),
+    (
+        # Dealing with non kanji non kana characters such as "・"
+        "トム・ソーヤーの冒険", "とむそーやーのぼうけん", [
+            Text(text='トム・ソーヤーの', furigana=None),
+            Text(text='冒険', furigana='ぼうけん')
+        ]
+    ),
+    (
+        # Dealing with non kanji non kana characters such as "・"
+        "銃・病原菌・鉄", "じゅうびょうげんきんてつ", [
+            Text(text='銃・病原菌・鉄', furigana='じゅうびょうげんきんてつ')
+        ]
+    ),
     ("出会う", "であう", [
         Text(text='出会', furigana='であ'),
         Text(text='う', furigana=None),
