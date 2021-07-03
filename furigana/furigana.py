@@ -29,7 +29,7 @@ def is_kana_character(ch):
 def is_kanji_or_number(ch):
     return is_kanji(ch) or ch in "0123456789０１２３４５６７８９"
 
-def split_okurigana(text, hiragana):
+def split_okurigana(text, hiragana, reversed=False):
     logging.debug(f'Split okurigana for "{text}" / "{hiragana}"')
 
     split = []
@@ -46,9 +46,13 @@ def split_okurigana(text, hiragana):
                 # Increment the hiragana cursor, except for punctuation (not kana nor kanji),
                 # which is absent from the hiragana str !
                 if is_kana_character(text[i]):
-                    if hiragana[j] != text[i] and jaconv.hira2kata(hiragana[j]) != text[i]:
-                        # FIXME Handle this case properly ! Example: 人[ひと]となり
-                        logging.error(f"Kana {hiragana[j]} did not match character {text[i]} !")
+                    if not hiragana_matches_text_char(hiragana[j], text[i]):
+                        # Try parsing in reverse order
+                        if not reversed:
+                            return split_okurigana(text[::-1], hiragana[::-1], reversed=True)
+
+                        logging.error(f"Kana {hiragana[j]} did not match character {text[i]} ! {text} {hiragana}")
+
                         # Fallback by returning all the remaining text with all the hiragana as furigana
                         split.append(Text(text[start_i:], hiragana[start_j:]))
                         return split
@@ -79,7 +83,7 @@ def split_okurigana(text, hiragana):
         while (
             j < len(hiragana)
             and (
-                (hiragana[j] != text[i] and jaconv.hira2kata(hiragana[j]) != text[i])
+                not hiragana_matches_text_char(hiragana[j], text[i])
                 or j - start_j < i - start_i  # every kanji has at least one sound associated with it
              )
         ):
@@ -88,8 +92,25 @@ def split_okurigana(text, hiragana):
         logging.debug(f'Got reading "{hiragana[start_j:j]}" for "{text[start_i:i]}"')
 
         split.append(Text(text[start_i:i], hiragana[start_j:j]))
-        
+
+    # If we did a reverse parsing, reverse the results
+    if reversed:
+        reversed_split = [
+            Text(elem.text[::-1], elem.furigana[::-1] if elem.furigana else None)
+            for elem in split[::-1]
+        ]
+        split = reversed_split
+
     return split
+
+
+def hiragana_matches_text_char(hiragana, text_char):
+    return (
+        hiragana == text_char
+        or jaconv.hira2kata(hiragana) == text_char
+        # e.g., to handle ヶ月、ケ月、ヵ月、関ヶ原 ...
+        or (hiragana in {"か", "が"} and text_char in {"ヶ", "ヵ", "ケ"})
+    )
 
 
 def split_furigana(text, preserve_spaces=True):

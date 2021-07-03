@@ -4,6 +4,16 @@ from furigana.furigana import split_furigana, split_okurigana, Text
 
 
 @pytest.mark.parametrize(["text", "expected_split"], [
+    ("1ヶ月", [
+        Text(text='1', furigana=None),
+        Text(text='ヶ', furigana=None),
+        Text(text='月', furigana='げつ'),
+    ]),
+    ("雁ヶ音", [
+        Text(text='雁', furigana='かり'),
+        Text(text='ヶ', furigana=None),
+        Text(text='音', furigana='おん'),
+    ]),
     ("Spaces won't be forgotten", [
         Text(text='Spaces', furigana=None),
         Text(text=' ', furigana=None),
@@ -45,6 +55,28 @@ def test_split_furigana(text, expected_split):
 
 
 @pytest.mark.parametrize(["text", "hiragana", "expected_split"], [
+    (
+        # Reverse parsing example #1
+        "人となり", "ひととなり", [
+            Text(text='人', furigana='ひと'),
+            Text(text='となり', furigana=None)
+        ]
+    ),
+    (
+        # Reverse parsing example #2
+        "短かっ", "みじかかっ", [
+            Text(text='短', furigana='みじか'),
+            Text(text='かっ', furigana=None)
+        ]
+    ),
+    (
+        # ヶ used for が in location name
+        "青木ヶ原", "あおきがはら", [
+            Text(text='青木', furigana='あおき'),
+            Text(text='ヶ', furigana=None),
+            Text(text='原', furigana='はら'),
+        ]
+    ),
     (
         # Fallback in case of kana mismatch between text and hiragana
         "あ。あ", "あのあ", [Text(text='あ。あ', furigana='あのあ')]
