@@ -84,9 +84,14 @@ def split_furigana(text):
             continue
 
         # originが空のとき、漢字以外の時はふりがなを振る必要がないのでそのまま出力する
-        #sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
-        if origin != "" and len(node.feature.split(",")) > 7 and any(is_kanji(_) for _ in origin):
-            kana = node.feature.split(",")[7] # 読み仮名を代入
+        if origin != "" and any(is_kanji(_) for _ in origin):
+            #sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
+            #bypass it and give kanji as isto avoid IndexError
+            if len(node.feature.split(",")) > 7:
+                kana = node.feature.split(",")[7] # 読み仮名を代入
+            else:
+                kana = node.surface
+
             hiragana = jaconv.kata2hira(kana)
             ret  += split_okurigana(origin, hiragana)
         else:
