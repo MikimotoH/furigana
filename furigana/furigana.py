@@ -125,8 +125,9 @@ def split_furigana(text, mecab=None, kana2hiragana=None):
         if origin != "" and any(is_kanji(_) for _ in origin):
             #sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
             #bypass it and give kanji as isto avoid IndexError
-            if len(node.feature.split(",")) > 7:
-                kana = node.feature.split(",")[7] # 読み仮名を代入
+            split = node.feature.split(",")
+            if len(split) > 7:
+                kana = split[7] # 読み仮名を代入
             else:
                 kana = node.surface
             hiragana = kana2hiragana(kana)
