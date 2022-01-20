@@ -97,8 +97,9 @@ def split_furigana(text):
         if origin != "" and any(is_kanji(_) for _ in origin):
             #sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
             #bypass it and give kanji as isto avoid IndexError
-            if len(node.feature.split(",")) > 7:
-                kana = node.feature.split(",")[7] # 読み仮名を代入
+            split = node.feature.split(",")
+            if len(split) > 7:
+                kana = split[7] # 読み仮名を代入
             else:
                 kana = node.surface
             hiragana = jaconv.kata2hira(kana)
@@ -126,7 +127,7 @@ def print_plaintext(text):
     for pair in split_furigana(text):
         if len(pair)==2:
             kanji,hira = pair
-            print("%s(%s)" % (kanja,hira), end='')
+            print("%s(%s)" % (kanji,hira), end='')
         else:
             print(pair[0], end='')
     print('')
