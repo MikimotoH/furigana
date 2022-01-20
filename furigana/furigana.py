@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 import sys
 import MeCab
-import re
-import jaconv
 import unicodedata
 
 
@@ -74,7 +72,34 @@ def split_okurigana(text, hiragana):
                         break
 
 
-def split_furigana(text):
+def create_mecab(arg="-Ochasen"):
+    mecab = MeCab.Tagger(arg)
+    mecab.parse('')  # 空でパースする必要がある
+    return mecab
+
+
+def use_jaconv():
+    import jaconv
+
+    def convert(kana):
+        return jaconv.kata2hira(kana)
+
+    return convert
+
+
+def use_pykakasi():
+    import pykakasi
+
+    kakasi = pykakasi.kakasi()
+
+    def convert(kana):
+        conv = kakasi.convert(kana)
+        return conv[0]["hira"]
+
+    return convert
+
+
+def split_furigana(text, mecab=None, kana2hiragana=None):
     """ MeCab has a problem if used inside a generator ( use yield instead of return  )
     The error message is:
     ```
@@ -82,8 +107,11 @@ def split_furigana(text):
     ```
     It seems like MeCab has bug in releasing resource
     """
-    mecab = MeCab.Tagger("-Ochasen")
-    mecab.parse('') # 空でパースする必要がある
+    if mecab is None:
+        mecab = create_mecab()
+    if kana2hiragana is None:
+        kana2hiragana = use_jaconv()
+
     node = mecab.parseToNode(text)
     ret = []
 
@@ -101,7 +129,7 @@ def split_furigana(text):
                 kana = node.feature.split(",")[7] # 読み仮名を代入
             else:
                 kana = node.surface
-            hiragana = jaconv.kata2hira(kana)
+            hiragana = kana2hiragana(kana)
             for pair in split_okurigana(origin, hiragana):
                 ret += [pair]
         else:
@@ -111,8 +139,13 @@ def split_furigana(text):
     return ret
 
 
-def print_html(text):
-    for pair in split_furigana(text):
+def print_html(text, mecab=None, kana2hiragana=None):
+    if mecab is None:
+        mecab = create_mecab()
+    if kana2hiragana is None:
+        kana2hiragana = use_jaconv()
+
+    for pair in split_furigana(text, mecab, kana2hiragana):
         if len(pair)==2:
             kanji,hira = pair
             print("<ruby><rb>{0}</rb><rt>{1}</rt></ruby>".
@@ -122,11 +155,16 @@ def print_html(text):
     print('')
 
 
-def print_plaintext(text):
-    for pair in split_furigana(text):
+def print_plaintext(text, mecab=None, kana2hiragana=None):
+    if mecab is None:
+        mecab = create_mecab()
+    if kana2hiragana is None:
+        kana2hiragana = use_jaconv()
+
+    for pair in split_furigana(text, mecab, kana2hiragana):
         if len(pair)==2:
             kanji,hira = pair
-            print("%s(%s)" % (kanja,hira), end='')
+            print("%s(%s)" % (kanji,hira), end='')
         else:
             print(pair[0], end='')
     print('')
