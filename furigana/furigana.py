@@ -127,7 +127,7 @@ def print_plaintext(text):
     for pair in split_furigana(text):
         if len(pair)==2:
             kanji,hira = pair
-            print("%s(%s)" % (kanja,hira), end='')
+            print("%s(%s)" % (kanji,hira), end='')
         else:
             print(pair[0], end='')
     print('')
