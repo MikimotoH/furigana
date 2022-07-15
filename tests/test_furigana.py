@@ -120,6 +120,14 @@ def test_split_furigana(text, expected_split):
     ("２０", "にじゅう", [
         Text(text='２０', furigana="にじゅう"),
     ]),
+    (
+        # Some entries may have an incorrect reading
+        # that does not match in terms of length.
+        # In this case we just ignore the reading
+        "爆売れ", "うれ", [
+            Text(text='爆売れ', furigana=None),
+        ]
+    ),
 ])
 def test_split_okurigana(text, hiragana, expected_split):
     assert split_okurigana(text, hiragana) == expected_split

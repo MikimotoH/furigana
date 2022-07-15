@@ -36,62 +36,68 @@ def split_okurigana(text, hiragana, reversed=False):
     i = 0  # cursor on the text
     j = 0  # cursor on the hiragana
 
-    while i < len(text):
-        start_i = i
-        start_j = j
-
-        logging.debug(f'Taking care non kanji parts. i={i}, j={j} ("{text[i]}" / "{hiragana[j]}")')
-        if not is_kanji_or_number(text[i]):
-            while i < len(text) and j < len(hiragana) and not is_kanji_or_number(text[i]):
-                # Increment the hiragana cursor, except for punctuation (not kana nor kanji),
-                # which is absent from the hiragana str !
-                if is_kana_character(text[i]):
-                    if not hiragana_matches_text_char(hiragana[j], text[i]):
-                        # Try parsing in reverse order
-                        if not reversed:
-                            return split_okurigana(text[::-1], hiragana[::-1], reversed=True)
-
-                        logging.error(f"Kana {hiragana[j]} did not match character {text[i]} ! {text} {hiragana}")
-
-                        # Fallback by returning all the remaining text with all the hiragana as furigana
-                        split.append(Text(text[start_i:], hiragana[start_j:]))
-                        return split
-                    j += 1
-
-                i += 1
-
-            logging.debug(f'Reached end of non kanji part. i={i}, j={j} ("{text[start_i:i]}" / "{hiragana[start_j:j]}")')
-            split.append(Text(text[start_i:i], None))
-
-            if i >= len(text):
-                break
-
+    # Some entries may contain mistakes,
+    # such as 爆売れ with ウレ as the reading　(with mecab-ipadic-neologd)
+    if len(hiragana) < len(text):
+        # Discard the furigana for that word
+        split = [Text(text, None)]
+    else:
+        while i < len(text):
             start_i = i
             start_j = j
 
-        # find next kana
-        logging.debug(f'Find next kana in text "{text[i:]}". i={i}')
-        while i < len(text) and not is_kana_character(text[i]):
-            i += 1
+            logging.debug(f'Taking care non kanji parts. i={i}, j={j} ("{text[i]}" / "{hiragana[j]}")')
+            if not is_kanji_or_number(text[i]):
+                while i < len(text) and j < len(hiragana) and not is_kanji_or_number(text[i]):
+                    # Increment the hiragana cursor, except for punctuation (not kana nor kanji),
+                    # which is absent from the hiragana str !
+                    if is_kana_character(text[i]):
+                        if not hiragana_matches_text_char(hiragana[j], text[i]):
+                            # Try parsing in reverse order
+                            if not reversed:
+                                return split_okurigana(text[::-1], hiragana[::-1], reversed=True)
 
-        if i >= len(text):
-            logging.debug(f'Only kanji left. i={i}, j={j} ("{text[start_i:i]}" / "{hiragana[start_j:len(hiragana)]}")')
-            split.append(Text(text[start_i:i], hiragana[start_j:len(hiragana)]))
-            break
-        
-        logging.debug(f'Get reading for "{text[start_i:i]}". j={j}')
-        while (
-            j < len(hiragana)
-            and (
-                not hiragana_matches_text_char(hiragana[j], text[i])
-                or j - start_j < i - start_i  # every kanji has at least one sound associated with it
-             )
-        ):
-            j += 1
+                            logging.error(f"Kana {hiragana[j]} did not match character {text[i]} ! {text} {hiragana}")
 
-        logging.debug(f'Got reading "{hiragana[start_j:j]}" for "{text[start_i:i]}"')
+                            # Fallback by returning all the remaining text with all the hiragana as furigana
+                            split.append(Text(text[start_i:], hiragana[start_j:]))
+                            return split
+                        j += 1
 
-        split.append(Text(text[start_i:i], hiragana[start_j:j]))
+                    i += 1
+
+                logging.debug(f'Reached end of non kanji part. i={i}, j={j} ("{text[start_i:i]}" / "{hiragana[start_j:j]}")')
+                split.append(Text(text[start_i:i], None))
+
+                if i >= len(text):
+                    break
+
+                start_i = i
+                start_j = j
+
+            # find next kana
+            logging.debug(f'Find next kana in text "{text[i:]}". i={i}')
+            while i < len(text) and not is_kana_character(text[i]):
+                i += 1
+
+            if i >= len(text):
+                logging.debug(f'Only kanji left. i={i}, j={j} ("{text[start_i:i]}" / "{hiragana[start_j:len(hiragana)]}")')
+                split.append(Text(text[start_i:i], hiragana[start_j:len(hiragana)]))
+                break
+
+            logging.debug(f'Get reading for "{text[start_i:i]}". j={j}')
+            while (
+                j < len(hiragana)
+                and (
+                    not hiragana_matches_text_char(hiragana[j], text[i])
+                    or j - start_j < i - start_i  # every kanji has at least one sound associated with it
+                 )
+            ):
+                j += 1
+
+            logging.debug(f'Got reading "{hiragana[start_j:j]}" for "{text[start_i:i]}"')
+
+            split.append(Text(text[start_i:i], hiragana[start_j:j]))
 
     # If we did a reverse parsing, reverse the results
     if reversed:
