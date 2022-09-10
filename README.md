@@ -44,7 +44,7 @@ print_html('お茶にお煎餅、よく合いますね')
 
 ## Usage
 ```
-$ python3 furigana.py '活版印刷の流れを汲む出版作業では'
+$ python3 furigana/furigana.py '活版印刷の流れを汲む出版作業では'
 ```
 
 # Dependency
