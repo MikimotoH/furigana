@@ -44,7 +44,7 @@ print_html('お茶にお煎餅、よく合いますね')
 
 ## Usage
 ```
-$ python3 furigana.py '活版印刷の流れを汲む出版作業では'
+$ python3 furigana/furigana.py '活版印刷の流れを汲む出版作業では'
 ```
 
 # Dependency
@@ -52,9 +52,15 @@ See https://pypi.python.org/pypi/mecab-python3/0.7 <br/>
 run below commands on ubuntu 
 ```
 sudo apt-get install libmecab-dev mecab mecab-ipadic-utf8
-sudo -H pip3 install mecab-python3
-sudo -H pip3 install jaconv
+sudo -H pip3 install .
 ```
 
 # Conflict with Anaconda Python
 Please use Ubuntu's original python3, not to use with Anaconda Python3
+
+# Testing
+Some unit tests are provided:
+```
+sudo -H pip3 install pytest
+python3 -m pytest -s tests/test_furigana.py
+```
